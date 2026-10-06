@@ -1,0 +1,6 @@
+<Project>
+  <!-- NuGetPackageRoot is defined after Directory.Build.props, so its PathMap entry is added here. -->
+  <PropertyGroup Condition="'$(NuGetPackageRoot)' != ''">
+    <PathMap>$(PathMap),$([System.IO.Path]::GetFullPath('$(NuGetPackageRoot)'))=/_nuget/</PathMap>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,35 @@
+CarlModAudio {{VERSION}}（适用于 Carl Mod SCP: Secret Laboratory 服务器）
+=====================================================================
+
+通过游戏的语音聊天向玩家播放音频文件（Ogg Vorbis、WAV）：可以让所有人听到、
+从某个位置发出，或跟随某个玩家。只在服务端运行：玩家使用原版 Carl Mod 安卓客户端。
+构建自提交 {{COMMIT}}。
+
+环境要求
+--------
+服务器已安装 LabAPI-Mobile 1.1.7-mobile.3 或更新版本：
+https://github.com/Michaelihc/labapimobile
+
+安装
+----
+1. 安装 LabAPI-Mobile 并启动一次服务器，使其数据文件夹
+   <AppData>\SCP Secret Laboratory\LabAPI-Mobile\ 存在。<AppData> 是运行服务器的
+   用户的 %APPDATA%；如果 hoster_policy.txt 包含 "gamedir_for_configs: true"，
+   则是服务器目录下的 AppData 文件夹。
+2. 停止服务器，复制
+     plugins\CarlModAudio.dll  到  LabAPI-Mobile\plugins\global\
+     dependencies\NVorbis.dll  到  LabAPI-Mobile\dependencies\global\
+3. 启动服务器。它会创建音频文件夹
+     LabAPI-Mobile\configs\global\CarlModAudio\audio\
+   和配置文件
+     LabAPI-Mobile\configs\<端口>\CarlModAudio\config.yml
+4. 把 .ogg 或 .wav 文件放进音频文件夹。本压缩包中的 audio\chime.wav 是一段简短的测试音。
+
+在服务器控制台或远程管理（RA）中试用：
+  audio play chime
+  audio play chime loop id=test     (then: audio stop test)
+  audio status
+
+
+README.zh-CN.md 列出了所有命令和设置（README.md 为英文版）。licenses\ 中是
+CarlModAudio 和 NVorbis（Ogg Vorbis 解码器）的 MIT 许可证。

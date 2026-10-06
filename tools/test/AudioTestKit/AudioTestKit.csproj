@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Developer plugin for testing CarlModAudio on a local server: drives role changes, kicks and respawn waves through
+       the game's own code paths. Never packaged; the atest command has no permission check. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>AudioTestKit</AssemblyName>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LabApi" HintPath="$(LabApiDir)\LabApi.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(CarlManaged)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="CommandSystem.Core" HintPath="$(CarlManaged)\CommandSystem.Core.dll" Private="false" />
+    <Reference Include="Mirror" HintPath="$(CarlManaged)\Mirror.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(CarlManaged)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="mscorlib" HintPath="$(CarlManaged)\mscorlib.dll" Private="false" />
+    <Reference Include="System" HintPath="$(CarlManaged)\System.dll" Private="false" />
+    <Reference Include="System.Core" HintPath="$(CarlManaged)\System.Core.dll" Private="false" />
+    <Reference Include="netstandard" HintPath="$(CarlManaged)\netstandard.dll" Private="false" />
+  </ItemGroup>
+</Project>

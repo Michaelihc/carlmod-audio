@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Offline check of the decoders and the resampler: compiles the plugin's Decoding sources into a console program
+       that decodes files to 48 kHz mono WAV. Not part of the plugin. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\src\CarlModAudio\Decoding\*.cs" Link="Decoding\%(Filename)%(Extension)" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+  </ItemGroup>
+</Project>

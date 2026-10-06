@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CarlModAudio</AssemblyName>
+    <RootNamespace>CarlModAudio</RootNamespace>
+    <Version>1.0.0</Version>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- XML docs exist for plugin authors; do not require them on internal members. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <Target Name="CheckReferences" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(LabApiDir)\LabApi.dll')"
+           Text="LabApi.dll not found in '$(LabApiDir)'. Run tools\Get-LabApiMobile.ps1 or set LabApiDir to the framework folder of a LabAPI-Mobile release." />
+    <Error Condition="!Exists('$(CarlManaged)\Assembly-CSharp.dll')"
+           Text="Carl Mod server assemblies not found in '$(CarlManaged)'. Set CarlManaged to the 'Carl Mod_Data\Managed' folder of a Carl Mod server." />
+  </Target>
+
+  <ItemGroup>
+    <!-- NVorbis (MIT) decodes Ogg Vorbis. The netstandard2.0 build only needs System.Memory, which the game ships;
+         the net45 build would also need System.ValueTuple.dll, which it does not. -->
+    <PackageReference Include="NVorbis" Version="0.10.5" ExcludeAssets="all" GeneratePathProperty="true" />
+    <Reference Include="NVorbis" HintPath="$(PkgNVorbis)\lib\netstandard2.0\NVorbis.dll" Private="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="LabApi" HintPath="$(LabApiDir)\LabApi.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(LabApiDir)\0Harmony.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(CarlManaged)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="CommandSystem.Core" HintPath="$(CarlManaged)\CommandSystem.Core.dll" Private="false" />
+    <Reference Include="Mirror" HintPath="$(CarlManaged)\Mirror.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(CarlManaged)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="mscorlib" HintPath="$(CarlManaged)\mscorlib.dll" Private="false" />
+    <Reference Include="System" HintPath="$(CarlManaged)\System.dll" Private="false" />
+    <Reference Include="System.Core" HintPath="$(CarlManaged)\System.Core.dll" Private="false" />
+    <Reference Include="System.Memory" HintPath="$(CarlManaged)\System.Memory.dll" Private="false" />
+    <Reference Include="netstandard" HintPath="$(CarlManaged)\netstandard.dll" Private="false" />
+  </ItemGroup>
+</Project>

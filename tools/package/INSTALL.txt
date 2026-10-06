@@ -1,0 +1,38 @@
+CarlModAudio {{VERSION}} for the Carl Mod SCP: Secret Laboratory server
+=====================================================================
+
+Plays audio files (Ogg Vorbis, WAV) to players through the game's voice chat:
+for everyone, at a position, or following a player. It runs on the server
+only: players keep the stock Carl Mod Android client.
+Built from commit {{COMMIT}}.
+
+Requirements
+------------
+LabAPI-Mobile 1.1.7-mobile.3 or later installed on the server:
+https://github.com/Michaelihc/labapimobile
+
+Install
+-------
+1. Install LabAPI-Mobile and start the server once, so its data folder
+   <AppData>\SCP Secret Laboratory\LabAPI-Mobile\ exists. <AppData> is
+   %APPDATA% of the user running the server, or the server's own AppData
+   folder when hoster_policy.txt contains "gamedir_for_configs: true".
+2. Stop the server and copy
+     plugins\CarlModAudio.dll  into  LabAPI-Mobile\plugins\global\
+     dependencies\NVorbis.dll  into  LabAPI-Mobile\dependencies\global\
+3. Start the server. It creates the audio folder
+     LabAPI-Mobile\configs\global\CarlModAudio\audio\
+   and the configuration
+     LabAPI-Mobile\configs\<port>\CarlModAudio\config.yml
+4. Put .ogg or .wav files into the audio folder. audio\chime.wav from this
+   archive is a short test sound.
+
+Try it from the server console or Remote Admin:
+  audio play chime
+  audio play chime loop id=test     (then: audio stop test)
+  audio status
+
+
+README.md lists every command and setting; README.zh-CN.md is the Simplified
+Chinese version. licenses\ holds the MIT licence of CarlModAudio and of
+NVorbis (the Ogg Vorbis decoder).

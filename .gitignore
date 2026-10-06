@@ -1,0 +1,12 @@
+.runtime/
+**/bin/
+**/obj/
+dist/
+*.user
+.vs/
+__pycache__/
+# Audio files used for testing; only self-made samples under samples/ are tracked.
+*.ogg
+*.wav
+*.mp3
+!samples/*.wav
