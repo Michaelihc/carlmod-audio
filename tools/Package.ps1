@@ -75,7 +75,7 @@ if ($missing.Count -gt 0) { throw "CarlModAudio.dll references assemblies nobody
 # The PDB must not contain local paths.
 $pdb = Join-Path $bin 'CarlModAudio.pdb'
 $pdbText = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($pdb))
-if ($pdbText -match [regex]::Escape($repo) -or $pdbText -match '[A-Za-z]:\Users\') { throw "$pdb contains a local path." }
+if ($pdbText -match [regex]::Escape($repo) -or $pdbText -match '[A-Za-z]:\\Users\\') { throw "$pdb contains a local path." }
 
 $name = "CarlModAudio-$Version"
 $stage = Join-Path $OutputDir $name
