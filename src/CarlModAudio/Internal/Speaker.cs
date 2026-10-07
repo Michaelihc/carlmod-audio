@@ -18,10 +18,16 @@ namespace CarlModAudio.Internal;
 /// 3D at the speaker's body.
 /// </summary>
 /// <remarks>
-/// Spawning follows the fork's <c>ServerDummy.Spawn</c>, with three differences: <c>NicknameSync</c>'s hub reference is
-/// set before the nickname (the fork sets the nickname first and throws a NullReferenceException), the dummy's synced user
-/// ID is the dedicated server's (clients and the server then treat it as the server's own player: no player list or RA
-/// list entry, never counted for the lobby or for round-end checks), and roles change only through this class.
+/// <para>Spawning follows the fork's <c>ServerDummy.Spawn</c>, with these differences: <c>NicknameSync</c>'s hub
+/// reference is set before the nickname if the build has not set it (0.0.4 sets it only in <c>NicknameSync.Start</c>, so
+/// its native <c>Spawn</c> throws a NullReferenceException; 0.0.5 sets it in <c>Awake</c>), the dummy's synced user ID is
+/// the dedicated server's (clients and the server then treat it as the server's own player: no player list or RA list
+/// entry, never counted for the lobby or for round-end checks), and roles change only through this class. Its
+/// <c>PlayerIpOverride</c> is disabled.</para>
+/// <para>The native <c>ServerDummy.Spawn</c> works on 0.0.5 but is not used there either: it sends the spawn message
+/// (inside <c>AddPlayerForConnection</c>) before it sets the user ID, so clients would first see a null synced ID and list
+/// the speaker for good, and its user ID setter makes the dummy a ready client that late join and round start see before
+/// the speaker guards know it. Getting around both would mean patching Mirror's <c>AddPlayerForConnection</c>.</para>
 /// </remarks>
 internal sealed class Speaker
 {
@@ -37,6 +43,7 @@ internal sealed class Speaker
     private static FieldInfo? _nicknameHubField;
     private static FieldInfo? _privateUserIdField;
     private static PropertyInfo? _instanceModeProperty;
+    private static MethodInfo? _connectionIdGetter;
     private static string? _unsupported;
     private static bool _resolved;
 
@@ -200,6 +207,11 @@ internal sealed class Speaker
         _privateUserIdField = typeof(CharacterClassManager).GetField("_privUserId", Instance);
         _instanceModeProperty = typeof(CharacterClassManager).GetProperty(nameof(CharacterClassManager.InstanceMode), Instance);
 
+        // The ID the game itself gives a dummy (CharacterClassManager.Init): ServerDummyConnection.DeviceId on 0.0.5
+        // ("device_dummy_<guid>@device"), ServerDummyConnection.UserId on 0.0.4 ("dummy_<guid>@dummy").
+        _connectionIdGetter = (typeof(ServerDummyConnection).GetProperty("DeviceId", Instance)
+            ?? typeof(ServerDummyConnection).GetProperty("UserId", Instance))?.GetGetMethod(true);
+
         if (_dummyHubField == null || _dummyConnectionField == null)
             return "ServerDummy._hub/_connection not found";
         if (_nicknameHubField == null)
@@ -208,6 +220,8 @@ internal sealed class Speaker
             return "CharacterClassManager._privUserId not found";
         if (_instanceModeProperty?.GetSetMethod(true) == null)
             return "CharacterClassManager.InstanceMode has no setter";
+        if (_connectionIdGetter == null || _connectionIdGetter.ReturnType != typeof(string))
+            return "ServerDummyConnection.DeviceId/UserId not found";
 
         return null;
     }
@@ -234,13 +248,18 @@ internal sealed class Speaker
             SpeakerRegistry.Add(hub);
             hub.characterClassManager.GodMode = true;
 
+            // Its Start looks up the LiteNetLib peer by connection ID, which fails for the negative dummy ID and logs
+            // "Error during IP passthrough processing" for every spawn. A disabled component never runs Start.
+            if (gameObject.TryGetComponent(out PlayerIpOverride ipOverride))
+                ipOverride.enabled = false;
+
             ServerDummy dummy = gameObject.AddComponent<ServerDummy>();
             _dummyHubField!.SetValue(dummy, hub);
             _dummyConnectionField!.SetValue(dummy, connection);
-            // The server keeps the dummy's own user ID, but clients get "ID_Dedicated" in the spawn message itself, as
-            // for the server's own player: a client that sees any other ID first lists the player for good. The UserId
-            // setter is bypassed because it would sync a null ID to clients.
-            _privateUserIdField!.SetValue(hub.characterClassManager, connection.UserId);
+            // The server keeps the dummy's own device/user ID, but clients get "ID_Dedicated" in the spawn message
+            // itself, as for the server's own player: a client that sees any other ID first lists the player for good.
+            // The UserId setter is bypassed because it would sync a null ID to clients.
+            _privateUserIdField!.SetValue(hub.characterClassManager, _connectionIdGetter!.Invoke(connection, null));
             PresentAsServer(hub);
 
             NetworkServer.connections.Add(id, connection);
@@ -249,6 +268,7 @@ internal sealed class Speaker
 
             hub.serverRoles.RefreshPermissions();
 
+            // 0.0.5 sets it in NicknameSync.Awake; 0.0.4 only in Start, which runs next frame.
             if (_nicknameHubField!.GetValue(hub.nicknameSync) == null)
                 _nicknameHubField.SetValue(hub.nicknameSync, hub);
 

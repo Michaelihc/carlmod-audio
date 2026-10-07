@@ -31,7 +31,7 @@ Speakers are kept out of the game:
 | Client player list, RA player list, `players` console list | The speaker presents itself as the dedicated server's own player |
 | Role assignment at round start, late join, respawn waves, deathmatch respawns, `forceclass` | Every role change not made by CarlModAudio is cancelled |
 | Lobby player count, round-end team counts | Not counted (dedicated-server player; Overwatch and Tutorial are not counted by the game either) |
-| AFK kick, other kicks | Cancelled |
+| AFK kick, other kicks, bans | Cancelled |
 | Damage (decontamination, warhead, SCPs, falling) | God mode |
 | SCP-173 and SCP-096 "looking at" checks, tesla gates | Never triggered by a speaker |
 
@@ -39,8 +39,9 @@ What players can still notice is listed under [Limitations](#limitations).
 
 ## Requirements
 
-- A Carl Mod dedicated server (tested with game version 0.0.4) with
-  [LabAPI-Mobile](https://github.com/Michaelihc/labapimobile) 1.1.7-mobile.3 or later.
+- A Carl Mod dedicated server, game version 0.0.4 or 0.0.5, with
+  [LabAPI-Mobile](https://github.com/Michaelihc/labapimobile): 1.1.7-mobile.3 or later for 0.0.4, 1.1.7-mobile.5 or
+  later for 0.0.5.
 - Players need nothing: the stock Carl Mod client plays the audio.
 
 ## Install
@@ -168,7 +169,8 @@ A round restart destroys every audio player; create new ones afterwards (for exa
 
 ## Cost
 
-Measured on a local server with the Carl Mod 0.0.4 client in an Android emulator:
+Measured on a local server with the Carl Mod 0.0.4 client in an Android emulator (the server figures are the same on
+0.0.5):
 
 - Server: about 4 ms of main-thread time per second for each playing player while it streams to a listener (encoding
   included), about 0.07 ms per server frame at 60 fps. Four players at once: 16 ms per second; the server stayed at
@@ -196,8 +198,11 @@ Measured on a local server with the Carl Mod 0.0.4 client in an Android emulator
   after it is sent.
 - Each playing player uses its own speaker; `max_players` (at most 16) caps them.
 - MP3, Opus and FLAC files are not supported; convert them to Ogg Vorbis.
-- Tested with Carl Mod 0.0.4 (server and Android client). On startup the plugin checks the game members it needs; on a
-  build where they differ it logs why playback is unavailable instead of failing in the game.
+- Tested with Carl Mod 0.0.4 (server and Android client) and 0.0.5. On 0.0.5 the server side is verified (speakers stay
+  hidden and out of round logic, and every player receives the audio frames at the right rate), but playback has not
+  been checked on a real 0.0.5 client yet; its voice chat code and messages are the same as in 0.0.4. On startup the
+  plugin checks the game members it needs; on a build where they differ it logs why playback is unavailable instead of
+  failing in the game.
 
 ## Building
 
@@ -207,9 +212,10 @@ dotnet build src\CarlModAudio\CarlModAudio.csproj -c Release -p:CarlManaged="<se
 .\tools\Package.ps1 -CarlManaged "<server>\Carl Mod_Data\Managed"   # release archive in dist\
 ```
 
-`CarlManaged` is the `Carl Mod_Data\Managed` folder of a Carl Mod 0.0.4 server; by default the build looks in a sibling
-[labapimobile](https://github.com/Michaelihc/labapimobile) checkout's `.runtime\server-original`. `docs/testing.md`
-describes how playback was tested on the Android client.
+`CarlManaged` is the `Carl Mod_Data\Managed` folder of a Carl Mod 0.0.4 server (releases are built against 0.0.4 and
+run on 0.0.5 too); by default the build looks in a sibling [labapimobile](https://github.com/Michaelihc/labapimobile)
+checkout's `.runtime\server-original`. `docs/testing.md` describes how playback was tested on the Android client and
+on the server alone.
 
 ## Licence
 

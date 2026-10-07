@@ -7,7 +7,8 @@ CarlModAudio {{VERSION}}（适用于 Carl Mod SCP: Secret Laboratory 服务器�
 
 环境要求
 --------
-服务器已安装 LabAPI-Mobile 1.1.7-mobile.3 或更新版本：
+Carl Mod 服务器（游戏版本 0.0.4 或 0.0.5），并已安装 LabAPI-Mobile：
+0.0.4 需要 1.1.7-mobile.3 或更新版本，0.0.5 需要 1.1.7-mobile.5 或更新版本。
 https://github.com/Michaelihc/labapimobile
 
 安装

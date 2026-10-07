@@ -7,12 +7,12 @@
   <repo>\.runtime\refs\LabApiMobile-<version>\ (the default LabApiDir of Directory.Build.props points at its
   framework folder). With -Zip, extracts an archive you already have instead of downloading.
 
-.PARAMETER Version  LabAPI-Mobile version (default 1.1.7-mobile.3).
+.PARAMETER Version  LabAPI-Mobile version (default 1.1.7-mobile.5).
 .PARAMETER Zip      Existing LabApiMobile-<version>.zip to extract instead of downloading.
 #>
 [CmdletBinding()]
 param(
-    [string]$Version = '1.1.7-mobile.3',
+    [string]$Version = '1.1.7-mobile.5',
     [string]$Zip
 )
 

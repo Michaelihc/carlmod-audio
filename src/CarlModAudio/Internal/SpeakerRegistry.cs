@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 
@@ -11,7 +12,9 @@ namespace CarlModAudio.Internal;
 /// </summary>
 internal static class SpeakerRegistry
 {
-    private static readonly HashSet<ReferenceHub> Hubs = [];
+    // By reference: ReferenceHub.GetHashCode goes through its GameObject and throws once a speaker removed from outside
+    // (an admin's disconnect, a plugin) has been destroyed, which would leave it in the set.
+    private static readonly HashSet<ReferenceHub> Hubs = new(ByReference.Instance);
     private static int _roleChangeDepth;
 
     public static int Count => Hubs.Count;
@@ -52,6 +55,7 @@ internal static class SpeakerRegistry
         CharacterClassManager.OnInstanceModeChanged += OnInstanceModeChanged;
         PlayerEvents.ChangingRole += OnChangingRole;
         PlayerEvents.Kicking += OnKicking;
+        PlayerEvents.Banning += OnBanning;
         PlayerEvents.RaPlayerListAddingPlayer += OnRaPlayerListAddingPlayer;
     }
 
@@ -60,6 +64,7 @@ internal static class SpeakerRegistry
         CharacterClassManager.OnInstanceModeChanged -= OnInstanceModeChanged;
         PlayerEvents.ChangingRole -= OnChangingRole;
         PlayerEvents.Kicking -= OnKicking;
+        PlayerEvents.Banning -= OnBanning;
         PlayerEvents.RaPlayerListAddingPlayer -= OnRaPlayerListAddingPlayer;
     }
 
@@ -85,11 +90,28 @@ internal static class SpeakerRegistry
             ev.IsAllowed = false;
     }
 
+    // 0.0.5 accepts any device ID for bans, including a speaker's: the ban would add the speaker's ID and connection
+    // address to the ban lists and remove it. (0.0.4 refuses dummy IDs before the event.)
+    private static void OnBanning(PlayerBanningEventArgs ev)
+    {
+        if (ev.Player != null && Contains(ev.Player.ReferenceHub))
+            ev.IsAllowed = false;
+    }
+
     // The fork already leaves dedicated-server players out of the RA list; this covers builds where it does not.
     private static void OnRaPlayerListAddingPlayer(PlayerRaPlayerListAddingPlayerEventArgs ev)
     {
         if (Contains(ev.Target.ReferenceHub))
             ev.IsAllowed = false;
+    }
+
+    private sealed class ByReference : IEqualityComparer<ReferenceHub>
+    {
+        public static readonly ByReference Instance = new();
+
+        public bool Equals(ReferenceHub? x, ReferenceHub? y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(ReferenceHub obj) => RuntimeHelpers.GetHashCode(obj);
     }
 
     public readonly struct RoleChangeScope : IDisposable

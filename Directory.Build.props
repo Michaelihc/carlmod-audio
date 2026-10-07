@@ -2,8 +2,8 @@
   <PropertyGroup>
     <!-- LabAPI-Mobile framework folder with LabApi.dll and 0Harmony.dll (the "framework" folder of a LabAPI-Mobile
          release). tools\Get-LabApiMobile.ps1 downloads it to the default location. -->
-    <LabApiDir Condition="'$(LabApiDir)' == ''">$(MSBuildThisFileDirectory).runtime\refs\LabApiMobile-1.1.7-mobile.3\framework</LabApiDir>
-    <!-- "Carl Mod_Data\Managed" folder of a Carl Mod dedicated server (game version 0.0.4). -->
+    <LabApiDir Condition="'$(LabApiDir)' == ''">$(MSBuildThisFileDirectory).runtime\refs\LabApiMobile-1.1.7-mobile.5\framework</LabApiDir>
+    <!-- "Carl Mod_Data\Managed" folder of a Carl Mod dedicated server (releases are built against 0.0.4; the plugin runs on 0.0.4 and 0.0.5). -->
     <CarlManaged Condition="'$(CarlManaged)' == ''">$(MSBuildThisFileDirectory)..\labapimobile\.runtime\server-original\Carl Mod_Data\Managed</CarlManaged>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>

@@ -22,7 +22,7 @@ public sealed class CarlModAudioPlugin : Plugin<Config>
     public override string Author => "Michaelihc";
 
     /// <inheritdoc/>
-    public override Version Version => new(1, 0, 0);
+    public override Version Version => new(1, 0, 1);
 
     /// <inheritdoc/>
     public override Version RequiredApiVersion => new(1, 0, 0);

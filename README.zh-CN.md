@@ -28,7 +28,7 @@ Opus 编码器编码文件，并以这个扬声器的语音实时发送，每次
 | 客户端玩家列表、RA 玩家列表、控制台 `players` 列表 | 扬声器以专用服务器自身玩家的身份出现 |
 | 回合开始分配角色、中途加入、刷新波次、死斗模式重生、`forceclass` | 取消一切非 CarlModAudio 发起的角色变更 |
 | 大厅人数、回合结束时的阵营统计 | 不计入（专用服务器玩家；游戏本身也不统计观察者和教程角色） |
-| 挂机踢出、其他踢出 | 取消 |
+| 挂机踢出、其他踢出、封禁 | 取消 |
 | 伤害（去污、核弹、SCP、摔落） | 无敌模式 |
 | SCP-173 和 SCP-096 的“被注视”判定、电网门 | 扬声器永远不会触发 |
 
@@ -36,8 +36,8 @@ Opus 编码器编码文件，并以这个扬声器的语音实时发送，每次
 
 ## 环境要求
 
-- Carl Mod 专用服务器（已用游戏版本 0.0.4 测试），并安装 [LabAPI-Mobile](https://github.com/Michaelihc/labapimobile)
-  1.1.7-mobile.3 或更新版本。
+- Carl Mod 专用服务器，游戏版本 0.0.4 或 0.0.5，并安装 [LabAPI-Mobile](https://github.com/Michaelihc/labapimobile)：
+  0.0.4 需要 1.1.7-mobile.3 或更新版本，0.0.5 需要 1.1.7-mobile.5 或更新版本。
 - 玩家无需安装任何东西：原版 Carl Mod 客户端即可播放。
 
 ## 安装
@@ -159,7 +159,7 @@ AudioPlayer.Create().Play(AudioClipData.FromPcm(tone, 48000));
 
 ## 开销
 
-在本地服务器上测得，客户端为安卓模拟器中的 Carl Mod 0.0.4：
+在本地服务器上测得，客户端为安卓模拟器中的 Carl Mod 0.0.4（0.0.5 服务端的数据相同）：
 
 - 服务端：每个正在向听众推流的播放器约占每秒 4 毫秒主线程时间（含编码），即 60 fps 时每帧约 0.07 毫秒。同时四个播放器：
   每秒 16 毫秒；服务器保持 60 fps。解码在工作线程中进行（1 分钟 44.1 kHz 立体声文件在台式机 CPU 上约 0.1 秒）。
@@ -181,8 +181,9 @@ AudioPlayer.Create().Play(AudioClipData.FromPcm(tone, 48000));
 - 扬声器生成约 0.3 秒后才开始播放；声音在发送后经过 `buffer_ms` 加上网络延迟到达玩家。
 - 每个正在播放的播放器使用各自的扬声器；`max_players`（最多 16）限制其数量。
 - 不支持 MP3、Opus 和 FLAC 文件；请转换为 Ogg Vorbis。
-- 已用 Carl Mod 0.0.4（服务端和安卓客户端）测试。插件启动时会检查所需的游戏成员；如果游戏版本不同，它会在日志中说明无法播放的原因，
-  而不会在游戏中出错。
+- 已用 Carl Mod 0.0.4（服务端和安卓客户端）和 0.0.5 测试。0.0.5 上已验证服务端（扬声器保持隐藏、不参与回合逻辑，每位玩家都以正确的
+  速率收到音频帧），但尚未在真实的 0.0.5 客户端上确认播放效果；其语音聊天代码和消息与 0.0.4 相同。插件启动时会检查所需的游戏成员；
+  如果游戏版本不同，它会在日志中说明无法播放的原因，而不会在游戏中出错。
 
 ## 构建
 
@@ -192,9 +193,10 @@ dotnet build src\CarlModAudio\CarlModAudio.csproj -c Release -p:CarlManaged="<�
 .\tools\Package.ps1 -CarlManaged "<服务端>\Carl Mod_Data\Managed"   # 发布压缩包输出到 dist\
 ```
 
-`CarlManaged` 是 Carl Mod 0.0.4 服务端的 `Carl Mod_Data\Managed` 文件夹；默认使用同级目录
+`CarlManaged` 是 Carl Mod 0.0.4 服务端的 `Carl Mod_Data\Managed` 文件夹（发布版本基于 0.0.4 构建，也可在 0.0.5 上运行）；
+默认使用同级目录
 [labapimobile](https://github.com/Michaelihc/labapimobile) 检出中的 `.runtime\server-original`。`docs/testing.md`
-（英文）说明了如何在安卓客户端上测试播放。
+（英文）说明了如何在安卓客户端上以及仅在服务端测试播放。
 
 ## 许可
 

@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>CarlModAudio</AssemblyName>
     <RootNamespace>CarlModAudio</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- XML docs exist for plugin authors; do not require them on internal members. -->
