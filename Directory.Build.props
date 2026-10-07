@@ -11,5 +11,7 @@
     <DebugType>portable</DebugType>
     <!-- Keep the checkout location out of PDBs and stack traces. -->
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=/_/</PathMap>
+    <!-- Source Link would write the checkout's local path into the PDB (its document map ignores PathMap). -->
+    <EnableSourceLink>false</EnableSourceLink>
   </PropertyGroup>
 </Project>
